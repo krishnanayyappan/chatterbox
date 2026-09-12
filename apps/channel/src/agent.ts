@@ -1,6 +1,6 @@
 import { AbstractAgent } from "@ag-ui/client";
 import type { BaseEvent, RunAgentInput } from "@ag-ui/core";
-import { makeAgent } from "agent-core";
+import { makeAgent, SURFACE_RULES } from "agent-core";
 import { Observable, type Subscription } from "rxjs";
 
 type ChannelAgentFactory = (threadId: string) => AbstractAgent;
@@ -80,6 +80,14 @@ export class ChannelRunAgent extends AbstractAgent {
   }
 }
 
+// The channel surface keeps the base system prompt domain-neutral (just
+// SURFACE_RULES, not the full incident-focused SYSTEM_PROMPT) because the
+// per-Slack-channel role (incidents vs. general) is injected per-run instead,
+// via `context` — see channel.tsx. Baking ONCALL_ROLE in here would contradict
+// GENERAL_ROLE's "you are NOT an incident assistant" instruction.
 export function makeChannelAgent(threadId: string) {
-  return new ChannelRunAgent(makeAgent, threadId);
+  return new ChannelRunAgent(
+    (tid) => makeAgent(tid, { prompt: SURFACE_RULES }),
+    threadId,
+  );
 }

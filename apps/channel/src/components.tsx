@@ -25,13 +25,21 @@ import {
   Cell,
 } from "@copilotkit/channels";
 import { z } from "zod";
+import { ROLE_CONTEXT } from "agent-core";
 
-/** Severity drives the colour rail, so the channel can triage by glance. */
+/**
+ * Severity drives the colour rail on surfaces that render `accent` (Teams).
+ * Slack's renderer in this SDK version does not implement `accent` at all —
+ * verified by grepping @copilotkit/channels-slack's render code, which has no
+ * "accent"/"color"/"attachments" handling — so on Slack a card without another
+ * visual cue renders as plain structured text (headers/fields), indistinguishable
+ * by severity at a glance. `emoji` is a Slack-safe substitute: it always renders.
+ */
 const SEVERITY = {
-  sev1: { accent: "#C4145F", label: "SEV1 · customer-facing" },
-  sev2: { accent: "#8A5C10", label: "SEV2 · degraded" },
-  sev3: { accent: "#5B6478", label: "SEV3 · internal" },
-  resolved: { accent: "#2E7D5B", label: "RESOLVED" },
+  sev1: { accent: "#C4145F", emoji: "🔴", label: "SEV1 · customer-facing" },
+  sev2: { accent: "#8A5C10", emoji: "🟠", label: "SEV2 · degraded" },
+  sev3: { accent: "#5B6478", emoji: "⚪", label: "SEV3 · internal" },
+  resolved: { accent: "#2E7D5B", emoji: "🟢", label: "RESOLVED" },
 } as const;
 
 /**
@@ -57,7 +65,7 @@ export const IncidentCard = defineChannelComponent({
     const sev = SEVERITY[severity];
     return (
       <Message accent={sev.accent}>
-        <Header>{headline}</Header>
+        <Header>{`${sev.emoji} ${headline}`}</Header>
         <Context>{sev.label}</Context>
         <Fields>
           <Field label="Impact">{impact}</Field>
@@ -141,14 +149,20 @@ export function welcomeMessage(platform: string) {
         <Field label="I will">Summarise, keep a timeline, look things up</Field>
         <Field label="I won't">Touch production without a click</Field>
       </Fields>
+      <Context>
+        {'Every channel starts as a general assistant. Say "set this channel to incidents mode" to turn this on for a given channel.'}
+      </Context>
       <Actions>
         <Button
           value="catchup"
           style="primary"
           onClick={async ({ thread }) => {
+            // Catching up on an incident is inherently incidents-flavored,
+            // regardless of this channel's stored role.
             await thread.runAgent({
               prompt:
                 "Read this thread and bring me up to speed on the incident. Draw the incident card.",
+              context: [ROLE_CONTEXT.incidents],
             });
           }}
         >

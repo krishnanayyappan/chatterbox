@@ -22,6 +22,27 @@ import {
 import type { InteractionContext } from "@copilotkit/channels";
 export { searchTheWeb } from "./search";
 import { z } from "zod";
+import { ROLE_CONTEXT, type ChannelRole } from "agent-core";
+import { persistRole } from "./channel-role";
+
+/**
+ * Context-aware routing: which persona this Slack channel gets. Persisted per
+ * conversation via `thread.setState`/`thread.state` (Channels' own per-thread
+ * store — no separate registry needed). Read back in channel.tsx's
+ * onMention/onMessage to pick which `ROLE_CONTEXT` entry to inject.
+ */
+export const setChannelRole = defineChannelTool({
+  name: "set_channel_role",
+  description:
+    "Configure this channel's persistent role/persona. Call this ONLY when a human explicitly asks to configure, switch, or set this channel's mode/context/role (e.g. 'set this channel to incidents mode', 'make this a general channel', 'switch this channel's context'). 'incidents' turns on on-call incident response (incident cards, timeline, action proposals). 'general' is a plain helpful assistant with no incident framing. Never call this speculatively or infer it from an unrelated request.",
+  parameters: z.object({
+    role: z.enum(["incidents", "general"]).describe(Object.keys(ROLE_CONTEXT).join(" | ")),
+  }),
+  async handler({ role }, { thread, platform, user, actor }) {
+    await persistRole(thread, platform, user?.id ?? actor.id, role as ChannelRole);
+    return `This channel is now configured as: ${role}.`;
+  },
+});
 
 /**
  * Read the incident context already present in the conversation.

@@ -60,3 +60,41 @@ How to work an incident:
 
 /** What `makeAgent` actually sends. Swap ONCALL_ROLE for your own domain. */
 export const SYSTEM_PROMPT = `${SURFACE_RULES}\n\n---\n\n${ONCALL_ROLE}`;
+
+/**
+ * The other half of the Channels context-aware-routing demo: a channel that
+ * has explicitly opted OUT of incident framing. Paired with ONCALL_ROLE in
+ * {@link ROLE_CONTEXT} — see `apps/channel/src/channel.tsx` for how a per-
+ * Slack-channel role picks between them.
+ */
+export const GENERAL_ROLE = `
+You are a general-purpose helpful assistant in this channel. This channel is
+NOT configured for incident response.
+
+- Be a normal, friendly teammate: answer questions and help with whatever is
+  asked. Use search_web when a question needs live information.
+- Do NOT call incident_card, timeline, or propose_action here, even though
+  they exist as tools — they are reserved for channels configured with the
+  "incidents" role.
+- If someone describes an outage or asks you to track one in this channel,
+  say plainly that this channel isn't configured for incident tracking, and
+  offer to switch it by calling set_channel_role if they confirm that's what
+  they want.
+`.trim();
+
+export type ChannelRole = "incidents" | "general";
+
+/** New/unconfigured channels start here — see the "Default role" decision in project memory. */
+export const DEFAULT_CHANNEL_ROLE: ChannelRole = "general";
+
+/**
+ * Per-role prompt injection, keyed by the role `set_channel_role` persists via
+ * `thread.setState()`. Channels' `runAgent({ context })` merges additively on
+ * top of the fixed `SURFACE_RULES` base prompt — it cannot remove tools — so
+ * GENERAL_ROLE's job is to tell the model which already-registered tools are
+ * off-limits in this channel, not to hide them.
+ */
+export const ROLE_CONTEXT: Record<ChannelRole, { description: string; value: string }> = {
+  incidents: { description: "Channel role: on-call", value: ONCALL_ROLE },
+  general: { description: "Channel role: general assistant", value: GENERAL_ROLE },
+};
