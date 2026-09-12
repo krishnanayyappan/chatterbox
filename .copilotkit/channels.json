@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "channels": [
+    {
+      "name": "chatterbox-slack",
+      "displayName": "chatterbox-slack",
+      "providers": {
+        "slack": {
+          "env": {
+            "botToken": "INTELLIGENCE_CHANNEL_CHATTERBOX_SLACK_SLACK_BOT_TOKEN",
+            "signingSecret": "INTELLIGENCE_CHANNEL_CHATTERBOX_SLACK_SLACK_SIGNING_SECRET"
+          }
+        }
+      }
+    }
+  ]
+}

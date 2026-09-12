@@ -35,6 +35,11 @@ export function makeAgent(threadId: string, options: AgentFactoryOptions = {}) {
     // agent with tools needs room to loop.
     maxSteps: 10,
 
+    // Without a cap the AI SDK defaults to the model's max (often 65536+),
+    // which some providers reject outright if your account can't afford that
+    // many output tokens. A chat reply never needs that much.
+    maxOutputTokens: 2048,
+
     // The workplace, when one is configured. Empty array when it is not, so the
     // agent is never handed tools that would 401. Add your own MCP servers here
     // the same way — note HTTP transport takes `options` (with a wrapped
