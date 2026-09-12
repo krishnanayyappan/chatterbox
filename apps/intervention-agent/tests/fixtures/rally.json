@@ -1,0 +1,1 @@
+{"name":"Rally","candidate":{"trigger":"circling","confidence":0.9,"reason":"would interrupt"},"expected_arm":"silence","expected_suppressor":"rally"}

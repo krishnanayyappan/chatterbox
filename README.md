@@ -34,6 +34,24 @@ For Slack, follow [Channels setup](apps/channel/README.md#get-started). For Reac
 
 ## Templates
 
+## Project workflow: Slack Intervention Agent
+
+This project’s build lives in [`apps/intervention-agent`](apps/intervention-agent/).
+It is a Socket Mode Slack agent that evaluates each conversation before speaking,
+uses the least intrusive helpful surface, gates Exa research behind a button
+click, and records each quiet or spoken decision for the CopilotKit control room.
+
+It is intentionally separate from the starter `apps/channel` bot: run **one**
+Slack listener for this workflow, not both, so the two agents do not duplicate
+messages in the same channel. See its [run instructions](apps/intervention-agent/README.md).
+
+From this repository root:
+
+```powershell
+npm run setup:intervention # once, for a fresh checkout
+npm run dev:intervention
+```
+
 These starting points serve different kinds of context. **CopilotKit Channels** brings the Slack agent into the conversation; **CopilotKit React** connects the web agent to the app people are using; **CopilotKit React Native** brings the same agent pattern onto a phone.
 
 ### 1. Slack — an agent that joins the thread

@@ -1,0 +1,11 @@
+{
+  "name": "intervention-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Socket Mode Slack intervention agent launcher",
+  "scripts": {
+    "setup": "python -m venv .venv && .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt && .\\.venv\\Scripts\\python.exe -m pip install -e .",
+    "dev": ".\\.venv\\Scripts\\python.exe -m intervention_agent.slack_app",
+    "test": ".\\.venv\\Scripts\\python.exe -m unittest discover -s tests -v"
+  }
+}

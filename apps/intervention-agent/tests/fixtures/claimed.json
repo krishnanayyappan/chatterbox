@@ -1,0 +1,1 @@
+{"name":"Claimed","candidate":{"trigger":"missing_fact","confidence":0.8,"reason":"opening time unknown"},"expected_arm":"silence","expected_suppressor":"claimed"}

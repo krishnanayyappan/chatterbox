@@ -1,0 +1,1 @@
+{"name":"Dispute","candidate":{"trigger":"checkable_dispute","confidence":0.8,"reason":"conflicting factual claims"},"expected_arm":"thread_offer"}

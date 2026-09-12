@@ -16,6 +16,8 @@
   "scripts": {
     "dev": "npm run dev:web",
     "dev:slack": "npm run dev --workspace channel",
+    "dev:intervention": "npm --prefix apps/intervention-agent run dev",
+    "setup:intervention": "npm --prefix apps/intervention-agent run setup",
     "channel:status": "npx copilotkit@latest channels status --json",
     "channel:setup": "npx copilotkit@latest channels setup",
     "typecheck": "npm run typecheck --workspaces --if-present",
