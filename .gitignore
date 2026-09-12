@@ -20,3 +20,4 @@ apps/mobile/.expo/
 
 # Added by CopilotKit CLI: managed Channel setup credentials and artifacts.
 .copilotkit/artifacts/
+.ambi/
